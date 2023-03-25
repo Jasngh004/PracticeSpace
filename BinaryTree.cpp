@@ -37,8 +37,8 @@ void printpostorder(Node* node){
 }
 
 /*LEVEL ORDER TRAVERSAL */
-vector<vector<int>> levelorder(Node* node){
-    vector<vector<int>> ans;
+vector<vector<int> > levelorder(Node* node){
+    vector<vector<int> > ans;
     if(node == NULL){return ans;}
     queue<Node*> q;
     q.push(node);
@@ -96,24 +96,73 @@ vector<int> inorder(Node* root) {
         
     }
 
-vector<int> postorder(Node* node ){
-    vector<int> ans;
-    stack<Node*> s;
-    if(node == NULL){return ans;}
+  vector<int> postorder(Node* root) {
+        vector<int> ans;
+        stack<Node* > s;
 
-    s.push(node);
-    while(!s.empty())
-    {
-        node = s.top();
-        s.pop();
-       
-        if(node->right != NULL){s.push(node->right);}
-        if(node->left != NULL){s.push(node->left);}
-         ans.push_back(node->data);
+        Node* curr = root;
+        Node* temp;
+while(curr != NULL or !s.empty())
+{
+        if(curr != NULL){
+            s.push(curr);
+          curr = curr->left;
+        }
+
+        else{
+            temp = s.top()->right;
+            if(temp == NULL){
+                temp = s.top();
+                s.pop();
+
+                ans.push_back(temp->data);
+
+                while(!s.empty() && temp == s.top()->right){
+                    temp = s.top();
+                s.pop();
+
+                ans.push_back(temp->data);
+                }
+            }
+            else{curr =temp;}
+        }
+    }
+        return ans;
+        
     }
 
-    return ans;
-}
+
+   /*3 in one traversal*/
+
+ void traverse(Node* root, vector<int> &pre, vector<int> &in, vector<int> &post){
+    stack<pair<Node* , int > > s;
+    s.push({root,1});
+     if(root == NULL ){return;}
+    while(!s.empty())
+    {
+        auto it = s.top(); s.pop();
+        if(it.second == 1){
+            pre.push_back(it.first->data);
+            it.second++;
+            s.push(it);
+
+            if(it.first->right != NULL){
+                s.push( {it.first->right,1} );
+            }
+        }
+
+        else if(it.second == 2){
+            in.push_back(it.first->data);
+            it.second++;
+            s.push(it);
+
+            if(it.first->right != NULL){
+                s.push({it.first->right,2});
+            }
+        }
+        else{post.push_back(it.first->data);}
+    }
+ }   
 /*MAIN*/
 int main(){
 struct Node *root = new Node(1);
@@ -135,7 +184,7 @@ printpostorder(root);
 cout<<endl;
 cout<<"LEVEL ORDER TRAVERSAL"<<endl;
 
-vector<vector<int>> print = levelorder(root);
+vector<vector<int> > print = levelorder(root);
 
 for(int i =0;i<print.size();i++)
 {
@@ -160,6 +209,28 @@ for(int i=0;i<ans2.size();i++)
 {
     cout<<ans2[i]<<" ";
 }
-   
+
+cout<<endl;
+cout<<"I++ POST ORDER TRAVERSAL"<<endl;
+
+vector<int> ans3 = postorder(root);
+for(int i=0;i<ans3.size();i++)
+{
+    cout<<ans3[i]<<" ";
+}
+
+/*declaring vectors for post pre in*/
+vector<int> pre;
+vector<int> post;
+vector<int> in;
+cout<<endl<<"PREORDER LIST:";
+for(int i =0;i<pre.size();i++)
+{cout<<pre[i]<<" ";}
+cout<<endl<<"POST ORDER LIST:";
+for(int i =0;i<post.size();i++)
+{cout<<post[i]<<" ";}
+cout<<endl<<"INORDER LIST: ";
+for(int i =0;i<in.size();i++)
+{cout<<in[i]<<" ";}
     return 0;
 }
